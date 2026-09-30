@@ -1,15 +1,1 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using SupermarketCatalog.Data;
-using SupermarketCatalog.Models;
-
-namespace SupermarketCatalog.Pages.Admin;
-
-public class ProfileModel(AppDbContext db) : PageModel
-{
-    public Store? Store { get; set; }
-
-    public async Task OnGetAsync()
-    {
-        Store = await db.Stores.FindAsync(1);
-    }
-}
+using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc.RazorPages;using Microsoft.AspNetCore.Identity;using SupermarketCatalog.Models;namespace SupermarketCatalog.Pages.Admin;[Authorize]public class ProfileModel(UserManager<StoreUser> users):PageModel{public StoreUser? UserProfile{get;set;}public async Task OnGetAsync()=>UserProfile=await users.GetUserAsync(User);}

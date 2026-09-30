@@ -1,24 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using SupermarketCatalog.Data;
-using SupermarketCatalog.Models;
-
+using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.AspNetCore.Mvc.RazorPages;using Microsoft.EntityFrameworkCore;using SupermarketCatalog.Data;using SupermarketCatalog.Models;
 namespace SupermarketCatalog.Pages.Admin;
-
-public class EditModel(AppDbContext db) : PageModel
-{
-    [BindProperty]
-    public Deal? Deal { get; set; }
-
-    public async Task OnGetAsync(int id)
-    {
-        Deal = await db.Deals.FindAsync(id);
-    }
-
-    public async Task<IActionResult> OnPostAsync()
-    {
-        db.Deals.Update(Deal!);
-        await db.SaveChangesAsync();
-        return RedirectToPage("Index");
-    }
-}
+[Authorize]public class EditModel(AppDbContext db,UserManager<StoreUser> users):PageModel{[BindProperty]public Deal? Deal{get;set;}public async Task<IActionResult> OnGetAsync(int id){var u=await users.GetUserAsync(User);var sid=await db.Stores.Where(x=>x.OwnerId==u!.Id).Select(x=>(int?)x.Id).FirstOrDefaultAsync();Deal=await db.Deals.SingleOrDefaultAsync(x=>x.Id==id&&x.StoreId==sid);return Deal is null?NotFound():Page();}public async Task<IActionResult> OnPostAsync(){var u=await users.GetUserAsync(User);var sid=await db.Stores.Where(x=>x.OwnerId==u!.Id).Select(x=>(int?)x.Id).FirstOrDefaultAsync();if(Deal is null||sid is null)return NotFound();var existing=await db.Deals.SingleOrDefaultAsync(x=>x.Id==Deal.Id&&x.StoreId==sid);if(existing is null)return NotFound();existing.Title=Deal.Title;existing.TitleAr=Deal.TitleAr;existing.TitleEn=Deal.TitleEn;existing.Price=Deal.Price;existing.OldPrice=Deal.OldPrice;existing.Discount=Deal.Discount;existing.ExpiresAt=Deal.ExpiresAt;existing.ImageUrl=Deal.ImageUrl;await db.SaveChangesAsync();return RedirectToPage("Index");}}

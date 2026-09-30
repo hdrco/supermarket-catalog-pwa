@@ -1,19 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using SupermarketCatalog.Data;
-
+using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;using Microsoft.AspNetCore.Mvc.RazorPages;using Microsoft.EntityFrameworkCore;using Microsoft.AspNetCore.Identity;using SupermarketCatalog.Data;using SupermarketCatalog.Models;
 namespace SupermarketCatalog.Pages.Admin;
-
-public class DeleteModel(AppDbContext db) : PageModel
-{
-    public async Task<IActionResult> OnGetAsync(int id)
-    {
-        var deal = await db.Deals.FindAsync(id);
-        if (deal != null)
-        {
-            db.Deals.Remove(deal);
-            await db.SaveChangesAsync();
-        }
-        return RedirectToPage("Index");
-    }
-}
+[Authorize]public class DeleteModel(AppDbContext db,UserManager<StoreUser> users):PageModel{public async Task<IActionResult> OnPostAsync(int id){var u=await users.GetUserAsync(User);var sid=await db.Stores.Where(x=>x.OwnerId==u!.Id).Select(x=>(int?)x.Id).FirstOrDefaultAsync();var d=await db.Deals.SingleOrDefaultAsync(x=>x.Id==id&&x.StoreId==sid);if(d is not null){db.Deals.Remove(d);await db.SaveChangesAsync();}return RedirectToPage("Index");}}

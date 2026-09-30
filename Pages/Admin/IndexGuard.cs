@@ -1,0 +1,1 @@
+using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc.RazorPages;namespace SupermarketCatalog.Pages.Admin;[Authorize]public class IndexGuard:PageModel{}

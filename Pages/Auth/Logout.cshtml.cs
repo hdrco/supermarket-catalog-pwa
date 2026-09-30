@@ -1,16 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using SupermarketCatalog.Models;
-
+using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.AspNetCore.Mvc.RazorPages;using SupermarketCatalog.Models;
 namespace SupermarketCatalog.Pages.Auth;
-
-[Authorize]
-public class LogoutModel(SignInManager<StoreUser> signInManager) : PageModel
-{
-    public async Task<IActionResult> OnGetAsync()
-    {
-        await signInManager.SignOutAsync();
-        return RedirectToPage("/");
-    }
-}
+[Authorize]public class LogoutModel(SignInManager<StoreUser> signIn):PageModel{public async Task<IActionResult> OnGetAsync(){await signIn.SignOutAsync();return RedirectToPage("/");}}
