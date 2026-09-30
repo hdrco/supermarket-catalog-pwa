@@ -1,0 +1,1 @@
+using Microsoft.AspNetCore.Mvc.RazorPages;using Microsoft.EntityFrameworkCore;using SupermarketCatalog.Data;using SupermarketCatalog.Models;namespace SupermarketCatalog.Pages.Admin;public class IndexModel(AppDbContext db):PageModel{public List<Deal> Deals=[];public async Task OnGetAsync()=>Deals=await db.Deals.OrderByDescending(x=>x.Id).ToListAsync();}

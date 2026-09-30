@@ -1,0 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using SupermarketCatalog.Models;
+namespace SupermarketCatalog.Data;
+public class AppDbContext(DbContextOptions<AppDbContext> options):DbContext(options){public DbSet<Deal> Deals=>Set<Deal>();public DbSet<Store> Stores=>Set<Store>();}
+public static class Seed{public static void Data(AppDbContext db){if(db.Stores.Any())return;var s=new Store{Name="بازار تخفیف",NameAr="سوق الخصومات",NameEn="Discount Market",Email="demo@example.com"};db.Stores.Add(s);db.SaveChanges();db.Deals.AddRange(new Deal{Title="سیب تازه",TitleAr="تفاح طازج",TitleEn="Fresh Apples",Price=12500,OldPrice=25000,Discount=50,ImageUrl="https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=800",StoreId=s.Id,ExpiresAt=DateTime.UtcNow.AddDays(7)},new Deal{Title="شیر پرچرب",TitleAr="حليب كامل الدسم",TitleEn="Full-fat Milk",Price=13500,OldPrice=18000,Discount=25,ImageUrl="https://images.unsplash.com/photo-1563636619-e9143da7973b?w=800",StoreId=s.Id,ExpiresAt=DateTime.UtcNow.AddDays(5)});db.SaveChanges();}}

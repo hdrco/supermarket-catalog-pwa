@@ -1,0 +1,3 @@
+namespace SupermarketCatalog.Models;
+public class Deal{public int Id{get;set;}public string Title{get;set;}="";public string TitleAr{get;set;}="";public string TitleEn{get;set;}="";public decimal Price{get;set;}public decimal OldPrice{get;set;}public int Discount{get;set;}public string ImageUrl{get;set;}="";public DateTime ExpiresAt{get;set;}public int StoreId{get;set;}public Store? Store{get;set;}public bool IsActive=>ExpiresAt>DateTime.UtcNow;}
+public class Store{public int Id{get;set;}public string Name{get;set;}="";public string NameAr{get;set;}="";public string NameEn{get;set;}="";public string Email{get;set;}="";public string? LogoUrl{get;set;}public List<Deal> Deals{get;set;}=[];}
