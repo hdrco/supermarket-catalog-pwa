@@ -1,3 +1,44 @@
-@page
-@model SupermarketCatalog.Pages.StoresModel
-<!doctype html><html lang="@Model.Lang" dir="@Model.Dir"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/site.css"><title>@(Model.Lang=="en"?"Stores":Model.Lang=="ar"?"المتاجر":"بازاڕ")</title></head><body><header class="top"><a class="brand" href="/">🛒</a><nav><a href="/">@(Model.Lang=="en"?"Home":Model.Lang=="ar"?"الرئيسية":"سەرەتا")</a><a href="/Stores">@(Model.Lang=="en"?"Stores":Model.Lang=="ar"?"المتاجر":"بازاڕ")</a><button id="theme">🌙</button></nav></header><main><div class="section-head"><h1>@(Model.Lang=="en"?"Partner Stores":Model.Lang=="ar"?"المتاجر الشريكة":"بازاڕی ھاوکاری")</h1></div><div class="grid">@foreach(var s in Model.Stores){<article class="store-card"><h2>@s.Name</h2><p>@s.Email</p><small>@s.Deals.Count @(Model.Lang=="en"?"active deals":Model.Lang=="ar"?"عروض نشطة":"تخفیفی چالاک")</small><a href="/Store/@s.Id" class="cta">@(Model.Lang=="en"?"View":Model.Lang=="ar"?"عرض":"بینین")</a></article>}</div></main><footer>© 2026</footer><script src="/js/site.js"></script></body></html>
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using SupermarketCatalog.Data;
+using SupermarketCatalog.Models;
+
+namespace SupermarketCatalog.Pages;
+
+public class DealsModel(AppDbContext db) : PageModel
+{
+    public List<Deal> Deals { get; set; } = [];
+    public string Lang => Request.Query["lang"].FirstOrDefault() ?? Request.Cookies["lang"] ?? "ku";
+    public string Dir => Lang == "en" ? "ltr" : "rtl";
+    public string SearchTerm => Request.Query["q"].FirstOrDefault() ?? string.Empty;
+    public string Category => Request.Query["category"].FirstOrDefault() ?? string.Empty;
+
+    public async Task OnGetAsync()
+    {
+        var query = db.Deals
+            .Include(x => x.Store)
+            .Where(x => x.ExpiresAt > DateTime.UtcNow && x.IsActive)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            var term = SearchTerm.Trim();
+            query = query.Where(x =>
+                x.Title.Contains(term) ||
+                x.TitleAr.Contains(term) ||
+                x.TitleEn.Contains(term) ||
+                (x.Store != null && (x.Store.Name.Contains(term) || x.Store.NameAr.Contains(term) || x.Store.NameEn.Contains(term))));
+        }
+
+        if (!string.IsNullOrWhiteSpace(Category))
+        {
+            query = query.Where(x => x.Category == Category || x.CategoryAr == Category);
+        }
+
+        Deals = await query
+            .OrderByDescending(x => x.Discount)
+            .ToListAsync();
+    }
+
+    public string Title(Deal d) => d.GetTitle(Lang);
+}

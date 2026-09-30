@@ -8,6 +8,7 @@ namespace SupermarketCatalog.Pages;
 public class IndexModel(AppDbContext db) : PageModel
 {
     public List<Deal> Deals { get; set; } = [];
+    public List<Store> Stores { get; set; } = [];
 
     public string Lang => Request.Query["lang"].FirstOrDefault() ?? Request.Cookies["lang"] ?? "ku";
     public string Dir => Lang == "en" ? "ltr" : "rtl";
@@ -16,16 +17,20 @@ public class IndexModel(AppDbContext db) : PageModel
     {
         Deals = await db.Deals
             .Include(x => x.Store)
-            .Where(x => x.ExpiresAt > DateTime.UtcNow)
+            .Where(x => x.ExpiresAt > DateTime.UtcNow && x.IsActive)
             .OrderByDescending(x => x.Discount)
-            .Take(12)
+            .Take(8)
+            .ToListAsync();
+
+        Stores = await db.Stores
+            .Include(x => x.Deals)
+            .Where(x => x.IsActive)
+            .OrderByDescending(x => x.Rating)
+            .Take(6)
             .ToListAsync();
     }
 
-    public string Title(Deal deal) => Lang switch
-    {
-        "en" => string.IsNullOrWhiteSpace(deal.TitleEn) ? deal.Title : deal.TitleEn,
-        "ar" => string.IsNullOrWhiteSpace(deal.TitleAr) ? deal.Title : deal.TitleAr,
-        _ => string.IsNullOrWhiteSpace(deal.Title) ? deal.TitleEn : deal.Title
-    };
+    public string GetDealTitle(Deal deal) => deal.GetTitle(Lang);
+    public string GetStoreName(Store? store) => store == null ? "" : store.GetName(Lang);
+    public string GetLanguageHref(string lang) => $"/?lang={lang}";
 }
