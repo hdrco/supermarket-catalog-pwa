@@ -1,3 +1,157 @@
 @page
 @model SupermarketCatalog.Pages.IndexModel
-<!doctype html><html lang="@Model.Lang" dir="@Model.Dir"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#1769ff"><link rel="manifest" href="/manifest.json"><link rel="stylesheet" href="/css/site.css"><title>Market Deals</title></head><body><header class="top"><a class="brand" href="/">🛒 بازار تخفیف</a><nav><a href="#deals">@((Model.Lang=="en")?"Deals":Model.Lang=="ar"?"العروض":"تخفیفەکان")</a><a href="/Admin">پنل مدیریت</a><button id="theme">☾</button><a href="?lang=ku">کوردی</a><a href="?lang=ar">عربي</a><a href="?lang=en">EN</a></nav></header><main><section class="hero"><div><span class="pill">%50 OFF</span><h1>باشترین تخفیفەکان لە یەک شوێن</h1><p>تخفیفە نوێکان بدۆزەرەوە و لە بازاڕە نزیکەکانت کڕین بکە.</p><a class="cta" href="#deals">بینینی تخفیفەکان ←</a></div><div class="hero-art">🛍️<small>تخفیفی ڕۆژ</small></div></section><section id="deals"><div class="section-head"><h2>🔥 تخفیفە چالاکەکان</h2><span>@Model.Deals.Count تخفیف</span></div><div class="grid">@foreach(var d in Model.Deals){<article class="card"><div class="photo"><img src="@d.ImageUrl" alt="@Model.Title(d)"><b>-%@d.Discount</b></div><div class="card-body"><small>🏪 @d.Store?.Name</small><h3>@Model.Title(d)</h3><div class="prices"><strong>@d.Price.ToString("N0") IQD</strong><del>@d.OldPrice.ToString("N0")</del></div><p>تا @d.ExpiresAt.ToLocalTime().ToString("yyyy/MM/dd")</p></div></article>}</div></section></main><footer>© 2026 بازار تخفیف · پلاتفۆرمی تخفیفی سوپرمارکەتەکان</footer><script src="/js/site.js"></script></body></html>
+@{
+    var lang = Model.Lang;
+    var dir = Model.Dir;
+}
+<!doctype html>
+<html lang="@lang" dir="@dir">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f766e" />
+    <title>Erbil Deals</title>
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body class="market-body">
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand-wrap">
+                <div class="brand-mark">ع</div>
+                <div>
+                    <div class="brand-name">Erbil Deals</div>
+                    <small>Best deals in Iraq</small>
+                </div>
+            </div>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a class="active" href="/">Home</a>
+                <a href="/Deals">Offers</a>
+                <a href="/Stores">Stores</a>
+                <a href="/About">About</a>
+            </nav>
+
+            <div class="top-actions">
+                <button class="theme-btn" type="button" aria-label="Toggle theme">☀</button>
+                <div class="language-switch">
+                    <a href="/?lang=ku">KUR</a>
+                    <a href="/?lang=ar">ع</a>
+                    <a href="/?lang=en">EN</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero-banner container">
+            <div class="hero-copy">
+                <span class="eyebrow">Fresh deals every day</span>
+                <h1>Smart savings for homes across Iraq</h1>
+                <p>Find hot offers from supermarkets, groceries, electronics, and home essentials in Erbil, Sulaymaniyah, and Baghdad.</p>
+                <div class="hero-actions">
+                    <a class="primary-btn" href="#deals-grid">Explore offers</a>
+                    <a class="secondary-btn" href="/Stores">Browse stores</a>
+                </div>
+                <div class="stats-row">
+                    <div>
+                        <strong>420+</strong>
+                        <span>active deals</span>
+                    </div>
+                    <div>
+                        <strong>36</strong>
+                        <span>stores</span>
+                    </div>
+                    <div>
+                        <strong>4.8/5</strong>
+                        <span>trust score</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-panel">
+                <div class="promo-box big">
+                    <div class="mini-label">Today only</div>
+                    <h3>Up to 60% off</h3>
+                    <p>Fresh groceries and home essentials.</p>
+                </div>
+                <div class="promo-box small">
+                    <div class="mini-label">Best seller</div>
+                    <h4>Free delivery over 50K IQD</h4>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories container" aria-label="Categories">
+            <div class="section-label-row">
+                <h2>Popular categories</h2>
+                <a href="/Deals">View all</a>
+            </div>
+            <div class="category-grid">
+                <div class="category-card"><span>🥬</span><strong>Groceries</strong></div>
+                <div class="category-card"><span>🧴</span><strong>Home</strong></div>
+                <div class="category-card"><span>📱</span><strong>Electronics</strong></div>
+                <div class="category-card"><span>👕</span><strong>Fashion</strong></div>
+                <div class="category-card"><span>🥤</span><strong>Drinks</strong></div>
+                <div class="category-card"><span>🧁</span><strong>Bakery</strong></div>
+            </div>
+        </section>
+
+        <section class="offers container" id="deals-grid">
+            <div class="section-label-row">
+                <h2>Featured offers</h2>
+                <a href="/Deals">See all offers</a>
+            </div>
+
+            <div class="deal-grid">
+                @if (Model.Deals == null || !Model.Deals.Any())
+                {
+                    <div class="empty-state">No active deals right now. Please check again soon.</div>
+                }
+                else
+                {
+                    @foreach (var deal in Model.Deals)
+                    {
+                        <article class="deal-card">
+                            <a class="deal-image" href="/Deal/@deal.Id?lang=@lang">
+                                <img src="@deal.ImageUrl" alt="@Model.Title(deal)" />
+                                <span class="deal-discount">-@deal.Discount%</span>
+                            </a>
+                            <div class="deal-body">
+                                <div class="deal-store-row">
+                                    <span class="store-pill">@deal.Store?.Name</span>
+                                    <span class="status-pill">Live</span>
+                                </div>
+                                <h3>@Model.Title(deal)</h3>
+                                <div class="price-row">
+                                    <strong>@deal.Price.ToString("N0") IQD</strong>
+                                    <del>@deal.OldPrice.ToString("N0") IQD</del>
+                                </div>
+                                <div class="deal-footer">
+                                    <span>Ends @deal.ExpiresAt.ToString("dd MMM yyyy")</span>
+                                    <a href="/Deal/@deal.Id?lang=@lang" class="small-btn">View deal</a>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                }
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <div class="brand-name">Erbil Deals</div>
+                <p>Smart shopping for families across Iraq.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/About">About</a>
+                <a href="/Privacy">Privacy</a>
+                <a href="/Terms">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/site.js"></script>
+</body>
+</html>

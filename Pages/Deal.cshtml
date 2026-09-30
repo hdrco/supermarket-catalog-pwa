@@ -1,5 +1,5 @@
-@page
-@model SupermarketCatalog.Pages.IndexModel
+@page "{id:int}"
+@model SupermarketCatalog.Pages.DealModel
 @{
     var lang = Model.Lang;
     var dir = Model.Dir;
@@ -9,148 +9,79 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f172a" />
-    <title>Erbil Deals</title>
+    <title>@Model.Title()</title>
     <link rel="stylesheet" href="/css/site.css" />
 </head>
-<body class="market-body">
-    <header class="topbar">
+<body class="detail-body">
+    <header class="topbar detail-topbar">
         <div class="container topbar-inner">
             <div class="brand-wrap">
                 <div class="brand-mark">ع</div>
                 <div>
                     <div class="brand-name">Erbil Deals</div>
-                    <small>Best discounts in Iraq</small>
+                    <small>Offer details</small>
                 </div>
             </div>
-
-            <nav class="main-nav" aria-label="Main navigation">
-                <a class="active" href="/">Home</a>
-                <a href="/Deals">Offers</a>
-                <a href="/Stores">Stores</a>
-                <a href="/About">About</a>
-            </nav>
-
-            <div class="top-actions">
-                <button class="theme-btn" type="button" aria-label="Toggle theme">☀</button>
-                <div class="language-switch">
-                    <a href="/?lang=ku">KUR</a>
-                    <a href="/?lang=ar">ع</a>
-                    <a href="/?lang=en">EN</a>
-                </div>
-            </div>
+            <a class="back-link" href="/">← Back</a>
         </div>
     </header>
 
-    <main class="page-shell">
-        <section class="hero-banner container">
-            <div class="hero-copy">
-                <span class="eyebrow">Fresh deals every day</span>
-                <h1>Save more in Erbil, Sulaymaniyah and Baghdad</h1>
-                <p>Discover smart discounts from supermarkets, grocery chains, electronics shops and home stores—all in one place.</p>
-                <div class="hero-actions">
-                    <a class="primary-btn" href="#deals-grid">Explore offers</a>
-                    <a class="secondary-btn" href="/Stores">Browse markets</a>
+    <main class="detail-shell container">
+        @if (Model.Deal is null)
+        {
+            <div class="not-found-box">
+                <h2>Offer not found</h2>
+                <p>This deal may have expired or is no longer available.</p>
+                <a href="/" class="primary-btn">Back to homepage</a>
+            </div>
+        }
+        else
+        {
+            <article class="detail-card">
+                <div class="detail-image-wrap">
+                    <img src="@Model.Deal.ImageUrl" alt="@Model.Title()" />
+                    <span class="deal-discount large">-@Model.Deal.Discount%</span>
                 </div>
-                <div class="stats-row">
-                    <div>
-                        <strong>420+</strong>
-                        <span>active deals</span>
+
+                <div class="detail-content">
+                    <div class="detail-meta-row">
+                        <span class="store-pill">@Model.Deal.Store?.Name</span>
+                        <span class="status-pill">Limited offer</span>
                     </div>
-                    <div>
-                        <strong>36</strong>
-                        <span>stores</span>
+
+                    <h1>@Model.Title()</h1>
+                    <div class="detail-price-row">
+                        <strong>@Model.Deal.Price.ToString("N0") IQD</strong>
+                        <del>@Model.Deal.OldPrice.ToString("N0") IQD</del>
                     </div>
-                    <div>
-                        <strong>4.8/5</strong>
-                        <span>trust score</span>
+
+                    <div class="detail-info-grid">
+                        <div>
+                            <span class="label">Savings</span>
+                            <strong>@(Model.Deal.OldPrice - Model.Deal.Price) IQD</strong>
+                        </div>
+                        <div>
+                            <span class="label">Ends</span>
+                            <strong>@Model.Deal.ExpiresAt.ToString("dd MMM yyyy")</strong>
+                        </div>
+                        <div>
+                            <span class="label">City</span>
+                            <strong>Erbil</strong>
+                        </div>
+                    </div>
+
+                    <p class="detail-copy">
+                        This special offer is available for a limited time only. Visit the store or contact the market directly to claim the promotion.
+                    </p>
+
+                    <div class="detail-actions">
+                        <a class="primary-btn" href="/">View all deals</a>
+                        <a class="secondary-btn" href="/Stores">Go to stores</a>
                     </div>
                 </div>
-            </div>
-
-            <div class="hero-panel">
-                <div class="promo-box big">
-                    <div class="mini-label">Today only</div>
-                    <h3>Up to 60% off</h3>
-                    <p>Home essentials and fresh groceries</p>
-                </div>
-                <div class="promo-box small">
-                    <div class="mini-label">Best seller</div>
-                    <h4>Free delivery over 50K IQD</h4>
-                </div>
-            </div>
-        </section>
-
-        <section class="categories container" aria-label="Categories">
-            <div class="section-label-row">
-                <h2>Popular categories</h2>
-                <a href="/Deals">View all</a>
-            </div>
-            <div class="category-grid">
-                <div class="category-card"><span>🥬</span><strong>Groceries</strong></div>
-                <div class="category-card"><span>🧴</span><strong>Home</strong></div>
-                <div class="category-card"><span>📱</span><strong>Electronics</strong></div>
-                <div class="category-card"><span>👕</span><strong>Fashion</strong></div>
-                <div class="category-card"><span>🥤</span><strong>Drinks</strong></div>
-                <div class="category-card"><span>🧁</span><strong>Bakery</strong></div>
-            </div>
-        </section>
-
-        <section class="offers container" id="deals-grid">
-            <div class="section-label-row">
-                <h2>Featured offers</h2>
-                <a href="/Deals">See all offers</a>
-            </div>
-
-            <div class="deal-grid">
-                @if (Model.Deals == null || !Model.Deals.Any())
-                {
-                    <div class="empty-state">No active deals right now. Please check again soon.</div>
-                }
-                else
-                {
-                    @foreach (var deal in Model.Deals)
-                    {
-                        <article class="deal-card">
-                            <a class="deal-image" href="/Deal/@deal.Id?lang=@lang">
-                                <img src="@deal.ImageUrl" alt="@Model.Title(deal)" />
-                                <span class="deal-discount">-@deal.Discount%</span>
-                            </a>
-                            <div class="deal-body">
-                                <div class="deal-store-row">
-                                    <span class="store-pill">@deal.Store?.Name</span>
-                                    <span class="status-pill">Live</span>
-                                </div>
-                                <h3>@Model.Title(deal)</h3>
-                                <div class="price-row">
-                                    <strong>@deal.Price.ToString("N0") IQD</strong>
-                                    <del>@deal.OldPrice.ToString("N0") IQD</del>
-                                </div>
-                                <div class="deal-footer">
-                                    <span>Ends @deal.ExpiresAt.ToString("dd MMM yyyy")</span>
-                                    <a href="/Deal/@deal.Id?lang=@lang" class="small-btn">View deal</a>
-                                </div>
-                            </div>
-                        </article>
-                    }
-                }
-            </div>
-        </section>
+            </article>
+        }
     </main>
-
-    <footer class="site-footer">
-        <div class="container footer-inner">
-            <div>
-                <div class="brand-name">Erbil Deals</div>
-                <p>Smart shopping for families across Iraq.</p>
-            </div>
-            <div class="footer-links">
-                <a href="/About">About</a>
-                <a href="/Privacy">Privacy</a>
-                <a href="/Terms">Terms</a>
-            </div>
-        </div>
-    </footer>
 
     <script src="/js/site.js"></script>
 </body>
