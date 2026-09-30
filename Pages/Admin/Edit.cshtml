@@ -1,0 +1,3 @@
+@page "{id}"
+@model SupermarketCatalog.Pages.Admin.EditModel
+<!doctype html><html lang="ku" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/site.css"><title>دەستکاری تخفیف</title></head><body><main class="form-page"><h1>دەستکاری تخفیف</h1>@if(Model.Deal!=null){<form method="post"><input asp-for="Deal.Title" required><input asp-for="Deal.Price" type="number" required><input asp-for="Deal.OldPrice" type="number" required><input asp-for="Deal.Discount" type="number" required><input asp-for="Deal.ImageUrl" required><input asp-for="Deal.ExpiresAt" type="date" required><button class="cta">پاشەکەوتکردن</button><a href="/Admin">گەڕانەوە</a></form>}</main></body></html>
