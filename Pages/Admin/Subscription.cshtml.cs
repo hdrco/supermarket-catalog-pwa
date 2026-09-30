@@ -1,7 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SupermarketCatalog.Data;
 
 namespace SupermarketCatalog.Pages.Admin;
 
-public class SubscriptionModel : PageModel
+[Authorize]
+public class SubscriptionModel(AppDbContext db) : PageModel
 {
+    public void OnGet()
+    {
+    }
 }
